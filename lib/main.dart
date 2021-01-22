@@ -153,16 +153,16 @@ class MyDrawer extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => Profile()));
               },
             ),
-            // ListTile(
-            //   leading: Icon(Icons.exit_to_app),
-            //   title: Text(
-            //     "Test Form",
-            //   ),
-            //   onTap: () {
-            //     Navigator.push(context,
-            //         MaterialPageRoute(builder: (context) => TestProfile()));
-            //   },
-            // ),
+            ListTile(
+              leading: Icon(Icons.exit_to_app),
+              title: Text(
+                "Test Form",
+              ),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => TestProfile()));
+              },
+            ),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text(

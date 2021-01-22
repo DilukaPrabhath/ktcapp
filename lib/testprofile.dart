@@ -5,14 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ktcapk/button_widget.dart';
+import 'dart:convert';
 
-Future main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.portraitDown,
-  ]);
-}
+// Future main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   await SystemChrome.setPreferredOrientations([
+//     DeviceOrientation.portraitUp,
+//     DeviceOrientation.portraitDown,
+//   ]);
+// }
 
 class TestProfile extends StatefulWidget {
   @override
@@ -27,15 +28,17 @@ class TestProfileState extends State<TestProfile> {
   TextEditingController mobile;
   TextEditingController social_link;
   TextEditingController dob;
+  TextEditingController password;
 
   addData() {
-    var url = 'http://ktcapp.aitlab.xyz/api/feedback';
+    var url = 'https://ktcapp.aitlab.xyz/api/customer/register';
     http.post(url, body: {
       'feedback': full_name.text,
       'email': email.text,
       'mobile': mobile.text,
       'social_link': social_link.text,
       'dob': dob.text,
+      'password': password.text,
     });
   }
 
@@ -45,170 +48,279 @@ class TestProfileState extends State<TestProfile> {
     mobile = TextEditingController(text: '');
     social_link = TextEditingController(text: '');
     dob = TextEditingController(text: '');
+    password = TextEditingController(text: '');
     super.initState();
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  final formKey = GlobalKey<FormState>();
-  // String full_name = '';
-  // String email = '';
-  // String mobile = '';
-  // String social_link = '';
-  // String dob = '';
+  Widget _buildName() {
+    return TextFormField(
+      decoration:
+          InputDecoration(hintText: 'Full Name', border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: full_name,
+      validator: (value) {
+        if (value.isEmpty) {
+          return 'Name is Required';
+        } else {
+          return null;
+        }
+      },
+      maxLength: 30,
+    );
+  }
+
+  Widget _buildEmail() {
+    return TextFormField(
+      decoration:
+          InputDecoration(hintText: 'E Mail', border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: email,
+      validator: (value) {
+        final pattern = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
+        final regExp = RegExp(pattern);
+
+        if (value.isEmpty) {
+          return 'Enter an email';
+        } else if (!regExp.hasMatch(value)) {
+          return 'Enter a valid email';
+        } else {
+          return null;
+        }
+      },
+      keyboardType: TextInputType.emailAddress,
+    );
+  }
+
+  Widget _buildMobile() {
+    return TextFormField(
+      decoration: InputDecoration(
+          hintText: 'Mobile Number', border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: mobile,
+      validator: (value) {
+        if (value.length < 4) {
+          return 'Enter Valied Mobile Number';
+        } else {
+          return null;
+        }
+      },
+      keyboardType: TextInputType.phone,
+    );
+  }
+
+  Widget _buildUrl() {
+    return TextFormField(
+      decoration:
+          InputDecoration(hintText: 'Social URL', border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: social_link,
+      keyboardType: TextInputType.url,
+    );
+  }
+
+  Widget _buildDob() {
+    return TextFormField(
+      decoration: InputDecoration(
+          hintText: 'Date of Birth',
+          labelText: 'Date Of Birth',
+          border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: dob,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Date of Birth is Required';
+        }
+
+        return null;
+      },
+      keyboardType: TextInputType.datetime,
+    );
+  }
+
+  Widget _buildPassword() {
+    return TextFormField(
+      decoration: InputDecoration(
+          hintText: 'Password',
+          labelText: 'Password',
+          border: OutlineInputBorder()),
+      maxLines: 1,
+      controller: password,
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Password is Required';
+        }
+
+        return null;
+      },
+    );
+  }
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          backgroundColor: Color(0xFFFF0000),
-          title: Text('Profile'),
-          actions: <Widget>[
-            PopupMenuButton(
-              itemBuilder: (content) =>
-                  [PopupMenuItem(value: 2, child: Text("Log out"))],
-              onSelected: (int menu) {
-                if (menu == 2) {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => FirstScreen()));
-                  // navigatorKey.currentState.push(
-                  //     MaterialPageRoute(builder: (context) => Loginview()));
-                }
-              },
-            )
-          ],
-        ),
-        drawer: MyDrawer(),
-        body: Form(
-          key: formKey,
-          //autovalidateMode: AutovalidateMode.onUserInteraction,
-          child: ListView(
-            padding: EdgeInsets.all(16),
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: SingleChildScrollView(
+      child: Container(
+        width: double.infinity,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(begin: Alignment.topCenter, colors: [
+          Colors.red[800],
+          Colors.red[700],
+          Colors.red[600],
+        ])),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildUsername(),
-              const SizedBox(height: 16),
-              buildEmail(),
-              const SizedBox(height: 32),
-              buildMobile(),
-              const SizedBox(height: 32),
-              buildSocial(),
-              const SizedBox(height: 32),
-              buildDob(),
-              const SizedBox(height: 32),
-              buildSubmit(),
+              SizedBox(
+                height: 40,
+              ),
+              Padding(
+                padding: EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text(
+                      "Sign In",
+                      style: TextStyle(color: Colors.white, fontSize: 40),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Text(
+                      "APT Hair Saloon",
+                      style: TextStyle(color: Colors.white, fontSize: 18),
+                    ),
+                  ],
+                ),
+              ),
+              Container(
+                height: MediaQuery.of(context).size.height - -60,
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(60),
+                                topRight: Radius.circular(60))),
+                        child: Padding(
+                          padding: EdgeInsets.all(20),
+                          child: Column(
+                            children: <Widget>[
+                              SizedBox(
+                                height: 30,
+                              ),
+                              Container(
+                                padding: EdgeInsets.all(15),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Color.fromRGBO(195, 75, 17, 3),
+                                          blurRadius: 20,
+                                          offset: Offset(0, 5))
+                                    ]),
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      padding: EdgeInsets.all(5),
+                                      decoration: BoxDecoration(
+                                          border: Border(
+                                              bottom: BorderSide(
+                                        color: Colors.grey[200],
+                                      ))),
+                                      child: Form(
+                                        key: _formKey,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            _buildName(),
+                                            SizedBox(height: 15),
+                                            _buildEmail(),
+                                            SizedBox(height: 15),
+                                            _buildMobile(),
+                                            SizedBox(height: 15),
+                                            _buildUrl(),
+                                            SizedBox(height: 15),
+                                            _buildDob(),
+                                            SizedBox(height: 15),
+                                            _buildPassword(),
+                                            SizedBox(height: 40),
+                                            Container(
+                                              height: 50,
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.7,
+                                              child: RaisedButton(
+                                                shape:
+                                                    new RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            new BorderRadius
+                                                                    .circular(
+                                                                30.0)),
+                                                color: Colors.red[800],
+                                                child: Text(
+                                                  "Register",
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 18,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                                onPressed: () {
+                                                  if (!_formKey.currentState
+                                                      .validate()) {
+                                                    return;
+                                                  }
+                                                  setState(() {
+                                                    addData();
+                                                    Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            Homepage(),
+                                                      ),
+                                                    );
+                                                  });
+
+                                                  debugPrint('Clicked');
+
+                                                  //_formKey.currentState.save();
+
+                                                  //Response responceClient = await Dio().get('http://ktcapp.aitlab.xyz/api/feedback');
+
+                                                  // print(feedback);
+                                                },
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // SizedBox(
+              //   height: 200,
+              // ),
             ],
           ),
         ),
-      );
-
-  Widget buildUsername() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Full Name',
-          border: OutlineInputBorder(),
-          // errorBorder:
-          //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-          // focusedErrorBorder:
-          //     OutlineInputBorder(borderSide: BorderSide(color: Colors.purple)),
-          // errorStyle: TextStyle(color: Colors.purple),
-        ),
-        controller: full_name,
-        validator: (value) {
-          if (value.length < 4) {
-            return 'Enter at least 4 characters';
-          } else {
-            return null;
-          }
-        },
-        maxLength: 30,
-        //onSaved: (value) => setState(() => full_name = value),
-      );
-
-  Widget buildEmail() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Email',
-          border: OutlineInputBorder(),
-        ),
-        controller: email,
-        validator: (value) {
-          final pattern = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
-          final regExp = RegExp(pattern);
-
-          if (value.isEmpty) {
-            return 'Enter an email';
-          } else if (!regExp.hasMatch(value)) {
-            return 'Enter a valid email';
-          } else {
-            return null;
-          }
-        },
-        keyboardType: TextInputType.emailAddress,
-        // onSaved: (value) => setState(() => email = value),
-      );
-
-  Widget buildMobile() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Mobile number',
-          border: OutlineInputBorder(),
-        ),
-        controller: mobile,
-        validator: (value) {
-          if (value.length < 4) {
-            return 'Enter Valied Mobile Number';
-          } else {
-            return null;
-          }
-        },
-        keyboardType: TextInputType.phone,
-        //onSaved: (value) => setState(() => mobile = value),
-      );
-
-  Widget buildSocial() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Social URL',
-          border: OutlineInputBorder(),
-        ),
-        controller: social_link,
-        keyboardType: TextInputType.url,
-        //onSaved: (value) => setState(() => social_link = value),
-      );
-
-  Widget buildDob() => TextFormField(
-        decoration: InputDecoration(
-          labelText: 'Date Of Birth',
-          border: OutlineInputBorder(),
-        ),
-        controller: dob,
-        validator: (value) {
-          if (value.length < 1) {
-            return 'Enter Date Of Birth';
-          } else {
-            return null;
-          }
-        },
-        keyboardType: TextInputType.datetime,
-        //onSaved: (value) => setState(() => dob = value),
-      );
-
-  Widget buildSubmit() => Builder(
-        builder: (context) => ButtonWidget(
-          text: 'Submit',
-          onClicked: () {
-            final isValid = formKey.currentState.validate();
-            // FocusScope.of(context).unfocus();
-
-            if (isValid) {
-              formKey.currentState.save();
-
-              final message =
-                  'full_name: $full_name\nmobile: $mobile\nemail: $email\ndob: $dob';
-              final snackBar = SnackBar(
-                content: Text(
-                  message,
-                  style: TextStyle(fontSize: 20),
-                ),
-                backgroundColor: Colors.green,
-              );
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-            }
-          },
-        ),
-      );
+      ),
+    ));
+  }
 }

@@ -2,6 +2,7 @@ import 'package:ktcapk/fogetpassword.dart';
 import 'package:ktcapk/homepage.dart';
 import 'package:ktcapk/signupmobile.dart';
 import 'package:flutter/material.dart';
+import 'package:ktcapk/testprofile.dart';
 
 class Loginview extends StatefulWidget {
   @override
@@ -200,7 +201,7 @@ class _LoginviewState extends State<Loginview> {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                          builder: (context) => Signupmobile(),
+                                          builder: (context) => TestProfile(),
                                         ))
                                   },
                                   child: Text(
