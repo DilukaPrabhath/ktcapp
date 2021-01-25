@@ -6,15 +6,20 @@ import 'package:ktcapk/feedbacks.dart';
 import 'package:ktcapk/history.dart';
 import 'package:ktcapk/homepage.dart';
 import 'package:ktcapk/listtest.dart';
+import 'package:ktcapk/loginview.dart';
 import 'package:ktcapk/profile.dart';
 import 'package:ktcapk/rewards.dart';
 import 'package:ktcapk/firstscreen.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ktcapk/testprofile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+//import 'package:ktcapk/shared_preferences.dart';
 void main() {
   runApp(MyApp());
 }
+
+SharedPreferences sharedPreferences;
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
@@ -153,22 +158,24 @@ class MyDrawer extends StatelessWidget {
                     MaterialPageRoute(builder: (context) => Profile()));
               },
             ),
-            ListTile(
-              leading: Icon(Icons.exit_to_app),
-              title: Text(
-                "Test Form",
-              ),
-              onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => TestProfile()));
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.exit_to_app),
+            //   title: Text(
+            //     "Test Form",
+            //   ),
+            //   onTap: () {
+            //     Navigator.push(context,
+            //         MaterialPageRoute(builder: (context) => TestProfile()));
+            //   },
+            // ),
             ListTile(
               leading: Icon(Icons.exit_to_app),
               title: Text(
                 "Log Out",
               ),
               onTap: () {
+                sharedPreferences.clear();
+                sharedPreferences.commit();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => FirstScreen()));
               },
@@ -194,6 +201,11 @@ class _MyHomePageState extends State<MyHomePage> {
         Duration(seconds: 3),
         () => Navigator.push(
             context, MaterialPageRoute(builder: (context) => FirstScreen())));
+    checkLoginStatus();
+  }
+
+  checkLoginStatus() async {
+    sharedPreferences = await SharedPreferences.getInstance();
   }
 
   @override

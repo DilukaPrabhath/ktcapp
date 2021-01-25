@@ -1,8 +1,10 @@
 import 'package:ktcapk/firstscreen.dart';
 import 'package:ktcapk/homepage.dart';
+import 'package:ktcapk/loginview.dart';
 import 'package:ktcapk/main.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:ktcapk/util.dart';
 import 'package:http/http.dart' as http;
 import 'package:ktcapk/button_widget.dart';
 import 'dart:convert';
@@ -30,16 +32,23 @@ class TestProfileState extends State<TestProfile> {
   TextEditingController dob;
   TextEditingController password;
 
-  addData() {
-    var url = 'https://ktcapp.aitlab.xyz/api/customer/register';
-    http.post(url, body: {
-      'feedback': full_name.text,
+  addData() async {
+    var url = 'http://ktcapp.aitlab.xyz/api/customer/creg';
+    var x = await http.post(url, body: {
+      'full_name': full_name.text,
       'email': email.text,
       'mobile': mobile.text,
       'social_link': social_link.text,
       'dob': dob.text,
       'password': password.text,
     });
+    if (x.statusCode == 200) {
+      var messageSuccess = "Successfuly Registerd!!";
+      showMessage2(context, messageSuccess);
+    } else {
+      var messageError = "Can not Register Please enter correct details.!!";
+      showMessage(context, messageError);
+    }
   }
 
   void initState() {
@@ -280,13 +289,13 @@ class TestProfileState extends State<TestProfile> {
                                                   }
                                                   setState(() {
                                                     addData();
-                                                    Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            Homepage(),
-                                                      ),
-                                                    );
+                                                    // Navigator.push(
+                                                    //   context,
+                                                    //   MaterialPageRoute(
+                                                    //     builder: (context) =>
+                                                    //         Loginview(),
+                                                    //   ),
+                                                    // );
                                                   });
 
                                                   debugPrint('Clicked');
